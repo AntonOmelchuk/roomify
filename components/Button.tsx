@@ -1,7 +1,7 @@
 import React from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "danger" | "success" | "ghost";
+  variant?: "primary" | "outline" | "danger" | "success" | "ghost";
   size?: "sm" | "md" | "lg";
   fullWidth?: boolean;
 }
