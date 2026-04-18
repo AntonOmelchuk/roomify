@@ -1,6 +1,7 @@
 import { Box } from "lucide-react";
-import Button from "./Button";
 import { useOutletContext } from "react-router";
+
+import Button from "./Button";
 
 const Navbar = () => {
   const { isSignedIn, userName, signInHandler, signOutHandler } =
@@ -11,13 +12,13 @@ const Navbar = () => {
       try {
         await signOutHandler();
       } catch (error) {
-        throw new Error("Something went wrong");
+        throw new Error("Something went wrong", { cause: error });
       }
     } else {
       try {
         await signInHandler();
       } catch (error) {
-        throw new Error("Something went wrong");
+        throw new Error("Something went wrong", { cause: error });
       }
     }
   };

@@ -1,9 +1,9 @@
-import type { Route } from "./+types/home";
-import Navbar from "../../components/Navbar";
 import { ArrowRight, Clock, Layers } from "lucide-react";
-import Button from "../../components/Button";
 
-export function meta({}: Route.MetaArgs) {
+import Button from "../../components/Button";
+import Navbar from "../../components/Navbar";
+
+export function meta() {
   return [
     { title: "New React Router App" },
     { name: "description", content: "Welcome to React Router!" },

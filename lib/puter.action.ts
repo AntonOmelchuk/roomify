@@ -8,6 +8,6 @@ export const getCurrentUser = async () => {
   try {
     return await puter.auth.getUser();
   } catch (error) {
-    throw new Error("Something went wrong");
+    throw new Error("Something went wrong", { cause: error });
   }
 };

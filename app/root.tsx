@@ -1,3 +1,6 @@
+import "./app.css";
+
+import { useEffect, useState } from "react";
 import {
   isRouteErrorResponse,
   Links,
@@ -7,10 +10,8 @@ import {
   ScrollRestoration,
 } from "react-router";
 
-import type { Route } from "./+types/root";
-import "./app.css";
-import { useEffect, useState } from "react";
 import { getCurrentUser, signIn, signOut } from "../lib/puter.action";
+import type { Route } from "./+types/root";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -21,7 +22,9 @@ export const links: Route.LinksFunction = () => [
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    href:
+      "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32," +
+      "100..900;1,14..32,100..900&display=swap",
   },
 ];
 
@@ -63,7 +66,7 @@ export default function App() {
       });
     } catch (error) {
       setAuthState(DEFAULT_AUTH_STATE);
-      return false;
+      throw new Error("Something went wrong", { cause: error });
     }
   };
 
