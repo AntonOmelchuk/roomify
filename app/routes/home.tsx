@@ -1,4 +1,6 @@
 import { ArrowRight, Clock, Layers } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
 import Button from "../../components/Button";
 import Navbar from "../../components/Navbar";
@@ -6,12 +8,29 @@ import Upload from "../../components/Upload";
 
 export function meta() {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "Roomify" },
+    { name: "description", content: "Welcome to Roomify!" },
   ];
 }
 
 const Home = () => {
+  const navigate = useNavigate();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleUploadComplete = async () => {
+    const newId = window.crypto.randomUUID();
+
+    navigate(`/visualizer/${newId}`);
+
+    return true;
+  };
+
+  const projectDate = "01.01.2026";
+
   return (
     <div className="home">
       <Navbar />
@@ -53,7 +72,7 @@ const Home = () => {
               <p>Supports JPG, PNG formats up to 10MB</p>
             </div>
 
-            <Upload onComplete={(base64) => console.log(base64)} />
+            <Upload onComplete={handleUploadComplete} />
           </div>
         </div>
       </section>
@@ -86,7 +105,11 @@ const Home = () => {
                   <h3>Project Manhattan</h3>
                   <div className="meta">
                     <Clock size={12} />
-                    <span>{new Date("01.01.2026").toLocaleDateString()}</span>
+                    <span>
+                      {mounted
+                        ? new Date(projectDate).toLocaleDateString()
+                        : projectDate}
+                    </span>
                     <span>By TonyJSX</span>
                   </div>
                 </div>
