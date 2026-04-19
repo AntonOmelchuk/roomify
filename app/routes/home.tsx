@@ -2,6 +2,7 @@ import { ArrowRight, Clock, Layers } from "lucide-react";
 
 import Button from "../../components/Button";
 import Navbar from "../../components/Navbar";
+import Upload from "../../components/Upload";
 
 export function meta() {
   return [
@@ -52,7 +53,7 @@ const Home = () => {
               <p>Supports JPG, PNG formats up to 10MB</p>
             </div>
 
-            <p>Upload images</p>
+            <Upload onComplete={(base64) => console.log(base64)} />
           </div>
         </div>
       </section>
