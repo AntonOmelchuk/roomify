@@ -1,4 +1,7 @@
 /* eslint-disable max-len */
+export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // align with advertised limit
+export const ALLOWED_TYPES = ["image/jpeg", "image/png"];
+
 export const PUTER_WORKER_URL = import.meta.env.VITE_PUTER_WORKER_URL || "";
 
 // Storage Paths

@@ -21,10 +21,10 @@ const Home = () => {
     setMounted(true);
   }, []);
 
-  const handleUploadComplete = async () => {
+  const handleUploadComplete = async (base64: string) => {
     const newId = window.crypto.randomUUID();
 
-    navigate(`/visualizer/${newId}`);
+    navigate(`/visualizer/${newId}`, { state: { base64 } });
 
     return true;
   };

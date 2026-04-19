@@ -1,8 +1,10 @@
 import { CheckCircle2, ImageIcon, UploadIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router";
 
 import {
+  ALLOWED_TYPES,
+  MAX_UPLOAD_BYTES,
   PROGRESS_INTERVAL_MS,
   PROGRESS_STEP,
   REDIRECT_DELAY_MS,
@@ -16,22 +18,41 @@ const Upload = (props: Props) => {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [progress, setProgress] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearTimers = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    intervalRef.current = null;
+    timeoutRef.current = null;
+  };
+
+  useEffect(() => clearTimers, []);
 
   const { isSignedIn } = useOutletContext<AuthContext>();
 
   const processFile = (file: File) => {
     if (!isSignedIn) return;
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      throw new Error("Not allowed image type");
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      throw new Error("Too big image size");
+    }
+
+    clearTimers();
     setFile(file);
     setProgress(0);
 
     const reader = new FileReader();
     reader.onload = (e) => {
       const base64 = e.target?.result as string;
-      const interval = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         setProgress((prev) => {
           if (prev >= 100) {
-            clearInterval(interval);
-            setTimeout(() => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            timeoutRef.current = setTimeout(() => {
               props.onComplete?.(base64);
             }, REDIRECT_DELAY_MS);
             return 100;
@@ -39,6 +60,11 @@ const Upload = (props: Props) => {
           return prev + PROGRESS_STEP;
         });
       }, PROGRESS_INTERVAL_MS);
+    };
+    reader.onerror = () => {
+      clearTimers();
+      setFile(null);
+      setProgress(0);
     };
     reader.readAsDataURL(file);
   };
