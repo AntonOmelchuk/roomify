@@ -1,10 +1,12 @@
-import { ArrowRight, Clock, Layers } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowRight, Layers } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 
 import Button from "../../components/Button";
 import Navbar from "../../components/Navbar";
+import ProjectCard from "../../components/ProjectCard";
 import Upload from "../../components/Upload";
+import { createProject } from "../../lib/puter.action";
 
 export function meta() {
   return [
@@ -15,21 +17,38 @@ export function meta() {
 
 const Home = () => {
   const navigate = useNavigate();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [projects, setProjects] = useState<DesignItem[]>([]);
 
   const handleUploadComplete = async (base64: string) => {
     const newId = window.crypto.randomUUID();
+    const name = `Residence ${newId}`;
 
-    navigate(`/visualizer/${newId}`, { state: { base64 } });
+    const newItem = {
+      id: newId,
+      name,
+      sourceImage: base64,
+      renderedImage: undefined,
+      timestamp: Date.now(),
+    };
+
+    const saved = await createProject({ item: newItem, visibility: "private" });
+
+    if (!saved) {
+      throw new Error("Failed to create project");
+    }
+
+    setProjects((prev) => [newItem, ...prev]);
+
+    navigate(`/visualizer/${newId}`, {
+      state: {
+        initialImage: saved.sourceImage,
+        initialRendered: saved.renderedImage || null,
+        name,
+      },
+    });
 
     return true;
   };
-
-  const projectDate = "01.01.2026";
 
   return (
     <div className="home">
@@ -90,34 +109,17 @@ const Home = () => {
           </div>
 
           <div className="projects-grid">
-            <div className="project-card group">
-              <div className="preview">
-                <img
-                  src="https://roomify-mlhuk267-dfwu1i.puter.site/projects/1770803585402/rendered.png"
-                  alt="Project"
+            {projects.map(
+              ({ id, name, renderedImage, sourceImage, timestamp }) => (
+                <ProjectCard
+                  key={id}
+                  name={name}
+                  timestamp={timestamp}
+                  renderedImage={renderedImage}
+                  sourceImage={sourceImage}
                 />
-                <div className="badge">
-                  <span>Community</span>
-                </div>
-              </div>
-              <div className="card-body">
-                <div>
-                  <h3>Project Manhattan</h3>
-                  <div className="meta">
-                    <Clock size={12} />
-                    <span>
-                      {mounted
-                        ? new Date(projectDate).toLocaleDateString()
-                        : projectDate}
-                    </span>
-                    <span>By TonyJSX</span>
-                  </div>
-                </div>
-                <div className="arrow">
-                  <ArrowRight size={18} />
-                </div>
-              </div>
-            </div>
+              ),
+            )}
           </div>
         </div>
       </section>
